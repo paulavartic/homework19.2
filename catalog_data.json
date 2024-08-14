@@ -1,0 +1,1 @@
+[{"model": "catalog.category", "pk": 1, "fields": {"name": "new category", "description": "description for new category"}}, {"model": "catalog.product", "pk": 2, "fields": {"name": "new product", "description": "description for new product", "photo": "", "category": null, "price": null, "created_at": null, "updated_at": null, "manufactured_at": null}}]
