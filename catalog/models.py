@@ -39,11 +39,12 @@ class Product(models.Model):
         blank=True,
         related_name="products",
     )
-    price = models.IntegerField()
+    price = models.IntegerField(blank=True, null=True)
     created_at = models.DateField(blank=True, null=True, verbose_name="Creation date")
     updated_at = models.DateField(
         blank=True, null=True, verbose_name="Date of the last update"
     )
+    manufactured_at = models.DateField(blank=True, null=True, verbose_name="Product manufactured at")
 
     class Meta:
         verbose_name = "Product"
