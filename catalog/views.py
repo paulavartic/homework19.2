@@ -12,3 +12,6 @@ def products_list(request):
 def contacts(request):
     return render(request,'contacts.html')
 
+def product_details(request, pk):
+    pass
+
