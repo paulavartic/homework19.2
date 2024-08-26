@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 help_text="Add photo",
                 null=True,
-                upload_to="products/photo",
+                upload_to="catalog/photo",
                 verbose_name="Photo",
             ),
         ),

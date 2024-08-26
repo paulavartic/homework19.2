@@ -25,7 +25,7 @@ class Product(models.Model):
         verbose_name="Product description", help_text="Describe product", blank=True, null=True
     )
     photo = models.ImageField(
-        upload_to="products/photo",
+        upload_to="catalog/photo",
         blank=True,
         null=True,
         verbose_name="Photo",
@@ -37,7 +37,7 @@ class Product(models.Model):
         verbose_name="Category name",
         null=True,
         blank=True,
-        related_name="products",
+        related_name="catalog",
     )
     price = models.IntegerField(blank=True, null=True)
     created_at = models.DateField(blank=True, null=True, verbose_name="Creation date")
