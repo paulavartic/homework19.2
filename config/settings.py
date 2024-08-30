@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalog',
+    'blog'
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR/'static']
-#STATIC_ROOT = 'home/paula/py_project/homework19.2/static'
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
