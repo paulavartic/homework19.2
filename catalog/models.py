@@ -55,3 +55,33 @@ class Product(models.Model):
         return self.name
 
 
+class Version(models.Model):
+    product = models.ForeignKey(
+        Product,
+        verbose_name='Product name',
+        related_name='version',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    version_number = models.PositiveIntegerField(
+        verbose_name='Version number',
+        help_text='Fill in the version number',
+    )
+    version_name = models.CharField(
+        verbose_name='Version name',
+        help_text='Fill in the name',
+        max_length=150,
+    )
+    current_version = models.BooleanField(
+        verbose_name='Current version indicator',
+        default=False,
+    )
+
+    class Meta:
+        verbose_name = 'Version'
+        verbose_name_plural = 'Versions'
+
+    def __str__(self):
+        return self.version_name
+
