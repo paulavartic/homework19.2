@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -31,6 +32,11 @@ class ProductUpdateView(UpdateView):
         context_data = self.get_context_data()
         formset = context_data['formset']
         if form.is_valid() and formset.is_valid():
+            active_version = [version for version in formset if version.cleaned_data.get('current_version')]
+            if len(active_version) > 1:
+                messages.error(self.request, 'Choose one active version')
+                return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
             self.object = form.save()
             formset.instance = self.object
             formset.save()
@@ -39,7 +45,7 @@ class ProductUpdateView(UpdateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
     def get_success_url(self):
-        return reverse('catalog:product_list', args=[self.kwargs.get('pk')])
+        return reverse('catalog:product_detail', args=[self.kwargs.get('pk')])
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
@@ -53,6 +59,16 @@ class ProductUpdateView(UpdateView):
 
 class ProductListView(ListView):
     model = Product
+
+    def get_context_data(self, *args, **kwargs):
+        context_data = super().get_context_data(*args, **kwargs)
+        for product in context_data['product_list']:
+            current_version = Version.objects.filter(product=product, current_version=True)
+            if current_version:
+                product.current_version = current_version.last().version_name
+            else:
+                product.current_version = '?'
+        return context_data
 
 
 class ProductDetailView(DetailView):

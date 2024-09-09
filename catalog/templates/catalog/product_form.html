@@ -11,8 +11,8 @@
                    <p class="card-text">Create</p>
                    {% endif %}
                    <div class="card-body">
-                           {% csrf_token %}
-                           {{ form.as_p }}
+                       {% csrf_token %}
+                       {{ form.as_p }}
                    </div>
                    <button type="submit" class="btn btn-success">
                        {% if object %}
@@ -25,7 +25,15 @@
            </div>
            <div class="col-6">
                <div class="card">
-                   <p class="card-text">Create</p>
+                   {% if object %}
+                   <div class="title">
+                       <h3 class="mb-0">Edit version</h3>
+                   </div>
+                   {% else %}
+                   <div class="title">
+                       <h3 class="mb-0">Edit version</h3>
+                   </div>
+                   {% endif %}
                    <div class="card-body">
                        {{ formset.management_form }}
                        {% for form in formset.forms %}

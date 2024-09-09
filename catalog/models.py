@@ -75,7 +75,7 @@ class Version(models.Model):
     )
     current_version = models.BooleanField(
         verbose_name='Current version indicator',
-        default=False,
+        default=True,
     )
 
     class Meta:
