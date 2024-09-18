@@ -100,7 +100,3 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
 
 def contacts(request):
     return render(request, 'contacts.html')
-
-
-
-
