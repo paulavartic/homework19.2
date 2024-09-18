@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, BooleanField
+from django import forms
 
 from catalog.models import Product, Version
 
@@ -31,3 +32,9 @@ class VersionForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Version
         fields = ('product', 'version_name', 'version_number', 'current_version')
+
+
+class ProductModeratorForm(StyleFormMixin, ModelForm):
+    class Meta:
+        model = Product
+        fields = ('description', 'category')
