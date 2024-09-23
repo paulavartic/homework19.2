@@ -20,6 +20,11 @@ class ProductForm(StyleFormMixin, ModelForm):
         model = Product
         fields = ('name', 'description', 'photo', 'category', 'price',)
 
+    class ProductModeratorForm(StyleFormMixin, ModelForm):
+        class Meta:
+            model = Product
+            fields = ('description', 'category', 'is_published')
+
     def clean_name(self):
         cleaned_data = self.cleaned_data.get('name')
         for i in ['казино', 'криптовалюта', 'крипта', 'биржа', 'дешево', 'бесплатно', 'обман', 'полиция', 'радар']:

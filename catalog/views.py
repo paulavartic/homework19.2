@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.forms import inlineformset_factory
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
@@ -19,7 +20,7 @@ class ProductCreateView(CreateView, LoginRequiredMixin):
     def form_valid(self, form):
         if form.is_valid():
             new_product = form.save()
-            new_product.slug = slugify(new_product.title)
+            new_product.slug = slugify(new_product.name)
             user = self.request.user
             new_product.owner = user
             new_product.save()
@@ -32,25 +33,6 @@ class ProductUpdateView(UpdateView, LoginRequiredMixin):
     form_class = ProductForm
     success_url = reverse_lazy('catalog:product_list')
 
-    def form_valid(self, form):
-        context_data = self.get_context_data()
-        formset = context_data['formset']
-        if form.is_valid() and formset.is_valid():
-            active_version = [version for version in formset if version.cleaned_data.get('current_version')]
-            if len(active_version) > 1:
-                messages.error(self.request, 'Choose one active version')
-                return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-            self.object = form.save()
-            formset.instance = self.object
-            formset.save()
-            return super().form_valid(form)
-        else:
-            return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-    def get_success_url(self):
-        return reverse('catalog:product_detail', args=[self.kwargs.get('pk')])
-
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
         ProductFormset = inlineformset_factory(Product, Version, VersionForm, extra=1)
@@ -60,11 +42,22 @@ class ProductUpdateView(UpdateView, LoginRequiredMixin):
             context_data['formset'] = ProductFormset(instance=self.object)
         return context_data
 
+    def form_valid(self, form):
+        context_data = self.get_context_data()
+        formset = context_data['formset']
+        if form.is_valid() and formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            return super().form_valid(form)
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
     def get_form_class(self):
         user = self.request.user
         if user == self.object.owner:
             return ProductForm
-        if user.has_perm('catalog.can_edit_description') and user.has_perm('catalog.can_edit_category') and user.has_perm('catalog.can_edit_is_published'):
+        if user.has_perm('catalog.can_edit_description') and user.has_perm('catalog.can_change_category') and user.has_perm('catalog.can_cancel_publication'):
             return ProductModeratorForm
         raise PermissionDenied
 
@@ -83,9 +76,16 @@ class ProductListView(ListView):
         return context_data
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(DetailView, LoginRequiredMixin):
     model = Product
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        if self.request.user == self.object.owner:
+            self.object.views_counter += 1
+            self.object.save()
+            return self.object
+        raise PermissionDenied
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
