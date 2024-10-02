@@ -9,7 +9,8 @@ from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
-from catalog.models import Product, Version
+from catalog.models import Product, Version, Category
+from catalog.services import get_categories_from_cache
 
 
 class ProductCreateView(CreateView, LoginRequiredMixin):
@@ -79,13 +80,14 @@ class ProductListView(ListView):
 class ProductDetailView(DetailView, LoginRequiredMixin):
     model = Product
 
-    def get_object(self, queryset=None):
-        self.object = super().get_object(queryset)
-        if self.request.user == self.object.owner:
-            self.object.views_counter += 1
-            self.object.save()
-            return self.object
-        raise PermissionDenied
+#    def get_object(self, queryset=None):
+#       self.object = super().get_object(queryset)
+#       if self.request.user == self.object.owner:
+#           self.object.views_counter += 1
+#           self.object.save()
+#           return self.object
+#       raise PermissionDenied
+
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
@@ -100,3 +102,10 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
 
 def contacts(request):
     return render(request, 'contacts.html')
+
+
+class CategoryListView(ListView):
+    model = Category
+
+    def get_queryset(self):
+        return get_categories_from_cache()
